@@ -1,4 +1,5 @@
-# Bio-Rhythm Analytics Engine
+# The "Bio-Rhythm" Analytics Engine & Cognitive Profiling
+
 
 > Project 5 實作：認知節律分析儀表板  
 > Tech Stack: Python Flask · SQLite · Vanilla JS
