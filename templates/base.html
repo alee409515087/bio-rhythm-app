@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Bio-Rhythm Analytics{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+TC:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=3">
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <nav class="topbar">
+    <div class="topbar-brand">
+      <span class="brand-icon">◈</span>
+      <span class="brand-name">BIO<span class="accent">RHYTHM</span></span>
+      <span class="brand-sub">Analytics Engine</span>
+    </div>
+    <div class="topbar-right">
+      <span class="user-pill">
+        <span class="user-icon">▣</span>
+        {{ username }}
+        <span class="role-badge">{{ session.get('role','') | upper }}</span>
+      </span>
+      <a href="{{ url_for('logout') }}" class="btn-logout">登出</a>
+    </div>
+  </nav>
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

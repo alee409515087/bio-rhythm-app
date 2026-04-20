@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}我的節律 — Bio-Rhythm{% endblock %}
+
+{% block content %}
+<div class="dash-layout dash-layout-single">
+  <section class="main-area">
+
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">我的認知節律</h1>
+        {% if profile %}
+        <p class="page-sub">
+          {{ profile.agent_name }}・{{ profile.branch_name }}
+          {% if profile.cold_start %}
+            <span class="cold-badge">❄ 冷啟動模式</span>
+          {% endif %}
+        </p>
+        {% endif %}
+      </div>
+      {% if profile %}
+      <div class="header-stats">
+        <div class="stat-chip">
+          <span class="stat-val">{{ profile.total_modules_completed }}</span>
+          <span class="stat-key">已完成模組</span>
+        </div>
+        {% if profile.cold_start %}
+        <div class="stat-chip cold-chip">
+          <span class="stat-val">{{ 10 - profile.total_modules_completed }}</span>
+          <span class="stat-key">距建立個人基線</span>
+        </div>
+        {% else %}
+        <div class="stat-chip">
+          <span class="stat-val" id="statAvg">—</span>
+          <span class="stat-key">個人平均 Bio-Score</span>
+        </div>
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+
+    {% if profile and profile.cold_start %}
+    <div class="card cold-start-card">
+      <div class="cold-start-icon">❄</div>
+      <div class="cold-start-body">
+        <h3>冷啟動模式</h3>
+        <p>您目前僅完成 <strong>{{ profile.total_modules_completed }}</strong>/10 個微模組。</p>
+        <p>系統目前套用 <strong>{{ profile.branch_name }}</strong> 的平均節律作為您的個人基線。</p>
+        <p>請再完成 <strong>{{ 10 - profile.total_modules_completed }}</strong> 個模組，系統即可建立專屬的認知節律檔案。</p>
+      </div>
+      <div class="cold-start-progress">
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: {{ (profile.total_modules_completed / 10 * 100)|int }}%"></div>
+        </div>
+        <span>{{ profile.total_modules_completed }}/10</span>
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="card heatmap-card">
+      <div class="card-header">
+        <span class="card-title">⬛ 我的 Bio-Score 熱力圖</span>
+        {% if profile and profile.cold_start %}
+        <span class="card-hint cold-hint">❄ 顯示分行平均（個人資料不足）</span>
+        {% else %}
+        <span class="card-hint">個人認知效能分佈</span>
+        {% endif %}
+      </div>
+      <div class="heatmap-wrapper" id="heatmapWrapper">
+        <div class="heatmap-loading" id="heatmapLoading">
+          <span class="loading-spin">◌</span> 載入中…
+        </div>
+        <div class="heatmap-container" id="heatmapContainer" style="display:none"></div>
+      </div>
+      <div class="heatmap-tooltip" id="tooltip"></div>
+    </div>
+
+    <div class="card insights-card">
+      <div class="card-header">
+        <span class="card-title">◆ 個人洞察建議</span>
+        <span class="card-hint">根據你的學習行為分析</span>
+      </div>
+      <div class="insights-grid" id="insightsGrid">
+        <div class="insight-loading"><span class="loading-spin">◌</span> 分析中…</div>
+      </div>
+    </div>
+
+  </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}?v=3"></script>
+<script>
+  initDashboard({ role: 'agent' });
+</script>
+{% endblock %}

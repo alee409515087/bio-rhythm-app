@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block title %}Manager Dashboard — Bio-Rhythm{% endblock %}
+
+{% block content %}
+<div class="dash-layout">
+
+  <!-- ── Left Filter Sidebar ── -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">檢視範圍</div>
+
+      <div class="filter-block">
+        <label class="filter-label">分行 BRANCH</label>
+        <select id="branchSelect" class="select-ctrl">
+          <option value="">全部分行</option>
+          {% for b in branches %}
+          <option value="{{ b.branch_id }}">{{ b.branch_name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="filter-block">
+        <label class="filter-label">小組 TEAM</label>
+        <select id="teamSelect" class="select-ctrl">
+          <option value="">全部小組</option>
+          {% for t in teams %}
+          <option value="{{ t.team_id }}" data-branch="{{ t.branch_id }}">{{ t.team_name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="filter-block">
+        <label class="filter-label">業務員 AGENT</label>
+        <select id="agentSelect" class="select-ctrl">
+          <option value="">全部業務員</option>
+          {% for a in agents %}
+          <option value="{{ a.agent_id }}"
+                  data-branch="{{ a.branch_id }}"
+                  data-team="{{ a.team_id }}">
+            {{ a.agent_name }}{% if a.cold_start %} ❄{% endif %}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <button id="applyFilter" class="btn-apply">套用篩選</button>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">圖例</div>
+      <div class="legend-bar"></div>
+      <div class="legend-labels"><span>低</span><span>中</span><span>高</span></div>
+      <div class="legend-note">Bio-Score 0 – 100</div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">BATCH JOB</div>
+      <div class="batch-status">
+        <span class="status-dot"></span>
+        <span class="status-text">每 2 分鐘重算</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── Main + Insights ── -->
+  <div class="content-area">
+
+    <!-- Header -->
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">認知節律儀表板</h1>
+        <p class="page-sub" id="viewLabel">全部分行 — 全部小組 — 全部業務員</p>
+      </div>
+      <div class="header-stats">
+        <div class="stat-chip">
+          <span class="stat-val" id="statAvg">—</span>
+          <span class="stat-key">平均 Bio-Score</span>
+        </div>
+        <div class="stat-chip">
+          <span class="stat-val" id="statPeak">—</span>
+          <span class="stat-key">最高時段</span>
+        </div>
+        <div class="stat-chip">
+          <span class="stat-val" id="statSessions">—</span>
+          <span class="stat-key">總學習次數</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Heatmap + Insights side by side -->
+    <div class="heatmap-insights-row">
+
+      <!-- Heatmap Card -->
+      <div class="card heatmap-card">
+        <div class="card-header">
+          <span class="card-title">⬛ 週 × 時 Bio-Score 熱力圖</span>
+          <span class="card-hint">X 軸 = 小時 · Y 軸 = 星期 · 懸停查看詳情</span>
+        </div>
+        <div class="heatmap-wrapper">
+          <div class="heatmap-loading" id="heatmapLoading">
+            <span class="loading-spin">◌</span> 載入中…
+          </div>
+          <div class="heatmap-container" id="heatmapContainer" style="display:none"></div>
+        </div>
+      </div>
+
+      <!-- Insights Sidebar -->
+      <div class="card insights-sidebar">
+        <div class="card-header">
+          <span class="card-title">◆ 可行動洞察</span>
+          <span class="card-hint">AI 分析</span>
+        </div>
+        <div class="insights-list" id="insightsGrid">
+          <div class="insight-loading"><span class="loading-spin">◌</span> 分析中…</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="heatmap-tooltip" id="tooltip"></div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}?v=3"></script>
+<script>initDashboard({ role: 'manager' });</script>
+{% endblock %}

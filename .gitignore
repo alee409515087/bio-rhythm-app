@@ -1,0 +1,5 @@
+bio_rhythm.db
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bio-Rhythm — 登入</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+TC:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="login-body">
+  <div class="login-bg">
+    <div class="login-grid"></div>
+  </div>
+
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="login-logo">
+        <span class="logo-icon">◈</span>
+        <div>
+          <div class="logo-title">BIO<span class="accent">RHYTHM</span></div>
+          <div class="logo-sub">Cognitive Analytics Engine · v2.4</div>
+        </div>
+      </div>
+
+      <div class="login-divider"></div>
+
+      <form method="POST" action="{{ url_for('login') }}" class="login-form">
+        <div class="field-group">
+          <label class="field-label">OPERATOR ID</label>
+          <input type="text" name="username" placeholder="輸入帳號"
+                 class="field-input {% if error %}input-error{% endif %}"
+                 autocomplete="username" autofocus required>
+        </div>
+        <div class="field-group">
+          <label class="field-label">ACCESS KEY</label>
+          <input type="password" name="password" placeholder="輸入密碼"
+                 class="field-input {% if error %}input-error{% endif %}"
+                 autocomplete="current-password" required>
+        </div>
+        {% if error %}
+        <div class="login-error">
+          <span class="error-icon">✕</span> {{ error }}
+        </div>
+        {% endif %}
+        <button type="submit" class="btn-login">
+          <span>進入系統</span>
+          <span class="btn-arrow">→</span>
+        </button>
+      </form>
+
+      <div class="login-hint">
+        <p>Manager: <code>manager</code> / <code>manager123</code></p>
+        <p>業務員: <code>agent01</code>–<code>agent08</code> / <code>agent123</code></p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
