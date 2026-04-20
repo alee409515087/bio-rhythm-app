@@ -1,7 +1,34 @@
 # Bio-Rhythm Analytics Engine
 
-> Project 5 實作：認知節律分析儀表板
+> Project 5 實作：認知節律分析儀表板  
 > Tech Stack: Python Flask · SQLite · Vanilla JS
+
+---
+
+## Project 5 規格對照
+
+| 題目要求 | 實作對應 | 狀態 |
+|---|---|---|
+| Heatmap Grid（X 軸 = 小時，Y 軸 = 星期）| `dashboard.js` `renderHeatmap()` | ✅ |
+| 顏色編碼（深綠 = 高效能，紅 = 低效能）| `scoreToColor()` 紅→琥珀→綠插值 | ✅ |
+| Branch / Team / Agent 三層下拉篩選 | 左側聯動篩選器 + `/api/teams` `/api/agents` | ✅ |
+| Actionable Insights sidebar | 右側洞察欄，自動生成文字建議 | ✅ |
+| Batch Job（不直接查原始資料）| APScheduler 每 2 分鐘重算 `hourly_bio_aggregates` | ✅ |
+| Bio-Score 加權公式（速度 > 慢速）| `bio_score.py` `calculate_bio_score()` | ✅ |
+| Cold Start Protocol（< 10 模組套用分行平均）| `database.py` `get_heatmap_data()` | ✅ |
+| `AgentProfiles` 資料表（含 peak_hour / peak_day）| `database.py` `init_db()` | ✅ |
+| `ModuleDifficultyBaseline` 資料表 | `database.py` `init_db()` | ✅ |
+| `HourlyBioAggregates` 資料表（含 data_points_count）| `database.py` `init_db()` | ✅ |
+
+---
+
+## 關於模擬資料
+
+本專案僅實作 **Project 5 分析層**。由於業務員學習端（micro-learning 介面）尚未實作，以 `seed_data.py` 模擬上游系統應產生的 `quiz_attempts` 原始紀錄（643 筆），替代真實 telemetry data。
+
+模擬方式使用 **Gaussian 常態分佈曲線**，為每位業務員設定不同的認知節律峰值（例如晨峰型、午後型），符合題目前提：人類確實存在生理節律，不同人的高峰時間不同。
+
+正式上線後可直接移除 `seed_data.py`，Bio-Rhythm Engine 將自動分析業務員真實操作所產生的學習紀錄。
 
 ---
 
@@ -48,7 +75,7 @@ bio-rhythm-app/
 ├── app.py              # Flask 路由 + APScheduler
 ├── database.py         # DB 查詢（heatmap / insights / cold-start）
 ├── bio_score.py        # Bio-Score 演算法 + 批次聚合 job
-├── seed_data.py        # Demo 資料生成（643 筆測驗紀錄）
+├── seed_data.py        # 模擬資料（替代尚未實作的學習端）
 ├── bio_rhythm.db       # SQLite（自動建立）
 ├── requirements.txt
 ├── templates/
@@ -58,8 +85,19 @@ bio-rhythm-app/
 │   └── agent.html      # 業務員個人節律頁
 └── static/
     ├── css/style.css   # 深色金融終端機 UI
-    └── js/dashboard.js # 熱力圖渲染、tooltip、篩選
+    └── js/dashboard.js # 熱力圖渲染、tooltip、三層篩選
 ```
+
+---
+
+## 技術選型
+
+| 技術 | 選擇原因 |
+|---|---|
+| Python Flask | 輕量、快速原型、適合單一功能分析服務 |
+| SQLite | 零設定、單檔案、符合題目要求的關聯式資料庫 |
+| APScheduler | 在 Flask 內嵌模擬 cron job，不需額外部署排程服務 |
+| Vanilla JS | 無需打包工具，降低環境依賴，瀏覽器直接執行 |
 
 ---
 
@@ -68,10 +106,11 @@ bio-rhythm-app/
 | 資料表 | 說明 |
 |---|---|
 | `branches` | 分行（信義、大安）|
+| `teams` | 小組（壽險銷售、法遵合規、財富管理、數位通路）|
 | `agent_profiles` | 業務員基本資料 + 計算出的高峰時段 |
-| `module_difficulty_baseline` | 模組平均完成時間、通過率（正規化用）|
+| `module_difficulty_baseline` | 模組平均完成時間、通過率（Bio-Score 正規化用）|
 | `quiz_attempts` | 原始測驗紀錄（agent, module, time, score, tab_switches）|
-| `hourly_bio_aggregates` | **熱力圖資料來源**：每人每（星期幾×小時）的 Bio-Score |
+| `hourly_bio_aggregates` | **熱力圖資料來源**：每人每（星期幾 × 小時）的 Bio-Score |
 | `users` | 帳號（manager / agent 角色）|
 
 ---
